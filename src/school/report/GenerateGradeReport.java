@@ -3,6 +3,7 @@ package school.report;
 import grade.BasicEvaluation;
 import grade.GradeEvaluation;
 import grade.MajorEvaluation;
+import grade.PassFailEvaluation;
 import school.School;
 import school.Score;
 import school.Student;
@@ -60,17 +61,23 @@ public class GenerateGradeReport {
         ArrayList<Score> scoreList = student.getScoreList();
         int majorId = student.getMajorSubject().getSubjectId();
 
-        GradeEvaluation[] gradeEvaluation = {new BasicEvaluation(), new MajorEvaluation()};  //単位評価クレス達
+        GradeEvaluation[] gradeEvaluation = {new BasicEvaluation(), new MajorEvaluation(), new PassFailEvaluation()};  //単位評価クレス達
 
         for(int i=0; i<scoreList.size(); i++){  // 学生が持ってる点数達
 
             Score score = scoreList.get(i);
             if(score.getSubject().getSubjectId() == subjectId) {  //　現在の単位を算出する科目
                 String grade;
-                if(score.getSubject().getSubjectId() == majorId)  // 重点科目の場合
-                    grade = gradeEvaluation[Define.SAB_TYPE].getGrade(score.getPoint());  //重点科目の単位の評価方法
-                else
-                    grade = gradeEvaluation[Define.AB_TYPE].getGrade(score.getPoint()); // 重点科目ではない場合
+
+                if(score.getSubject().getGradeType() == Define.PF_TYPE) {
+                    grade = gradeEvaluation[Define.PF_TYPE].getGrade(score.getPoint());
+                }
+                else {
+                    if(score.getSubject().getSubjectId() == majorId)  // 重点科目の場合
+                        grade = gradeEvaluation[Define.SAB_TYPE].getGrade(score.getPoint());  //重点科目の単位の評価方法
+                    else
+                        grade = gradeEvaluation[Define.AB_TYPE].getGrade(score.getPoint()); // 重点科目ではない場合
+                }
                 buffer.append(score.getPoint());
                 buffer.append(":");
                 buffer.append(grade);
